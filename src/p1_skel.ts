@@ -470,7 +470,7 @@ class FittsTestUI extends UIClass {
         // proper with initial prompt
         this.childObjects.push(this._theBackground = 
             new BackgroundDisplay(this.canvas.width, this.canvas.height, this));
-   
+    
         // create the reticle and target at new random locations
         const {retX:retX, retY:retY, targX:targX,targY:targY, targD:targDiam} = 
             pickLocationsAndSize(this.canvas.width,this.canvas.height,);
