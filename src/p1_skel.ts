@@ -516,8 +516,8 @@ class FittsTestUI extends UIClass {
             case 'begin_trial':
                 
                 // === YOUR CODE HERE ===
-                this.theBackground.msg1 = "";
-                this.theBackground.msg2 = ` Trial #${this.trialCount} of ${this.MAX_TRIALS}`;
+                this.theBackground.msg1 = `  Trial #${this.trialCount} of ${this.MAX_TRIALS}`;
+                this.theBackground.msg2 = "";
                 this.theBackground.msg3 = "";
                 this.theReticle.visible = true;
                 this.theTarget.visible = false;
@@ -526,6 +526,9 @@ class FittsTestUI extends UIClass {
             case 'in_trial':
                 
                 // === YOUR CODE HERE ===
+                this.theBackground.msg1 = "";
+                this.theBackground.msg2 = "";
+                this.theBackground.msg3 = "";
                 this.theReticle.visible = false;
                 this.theTarget.visible = true;
         
@@ -534,8 +537,7 @@ class FittsTestUI extends UIClass {
                 
                 // === YOUR CODE HERE ===
                 this.theBackground.msg1 = "";
-                this.theBackground.msg2 = 
-                    "  Done! Refresh the page to start again.";;
+                this.theBackground.msg2 = "  Done! Refresh the page to start again.";;
                 this.theBackground.msg3 = "";
                 this.theReticle.visible = false;
                 this.theTarget.visible = false; 
@@ -664,11 +666,9 @@ class Target extends ScreenObject{
             this.diam = newDiam;
         }
         this.radius = this.diam/2
-        this.w = this.diam;
-        this.h = this.diam;
-        this.x = newCentX + this.w/2;
-        this.y = newCentY + this.h/2;
-        
+        this.centerX = newCentX;
+        this.centerY = newCentY;
+
         this.declareDamaged();
     }
     
@@ -694,11 +694,11 @@ class Target extends ScreenObject{
         // === YOUR CODE HERE ===
         if (!this.visible) return;
         ctx.beginPath();
-        ctx.arc(this.centerX, this.centerY, this.radius, 0, Math.PI * 2);
+        ctx.arc(this.centerX, this.centerY, this.radius, 0, 2*Math.PI);
         ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
+        ctx.fill();
         ctx.stroke();
     }
 
@@ -710,8 +710,8 @@ class Target extends ScreenObject{
         // === YOUR CODE HERE ===
         const dx = ptX - this.centerX;
         const dy = ptY - this.centerY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        return dist <= this.radius;
+        const dist_square = dx*dx+dy*dy;
+        return dist_square <= this.radius*this.radius;
         // === REMOVE THE FOLLOWING CODE (which is here so the skeleton code compiles) ===
         // return false;
         // === END OF CODE TO BE REMOVED ===
@@ -783,28 +783,26 @@ class Reticle extends Target {
     
         // Draw outer circle
         ctx.beginPath();
-        ctx.arc(this.centerX, this.centerY, this.radius, 0, Math.PI * 2);
+        ctx.arc(this.centerX, this.centerY, Reticle.RETICLE_DIAM/2, 0, 2*Math.PI);
         ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
+        ctx.fill();
         ctx.stroke();
     
         // Draw inner circle
         ctx.beginPath();
-        ctx.arc(this.centerX, this.centerY, Reticle.RETICLE_INNER_DIAM / 2, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.lineWidth = 2;
+        ctx.arc(this.centerX, this.centerY, Reticle.RETICLE_INNER_DIAM/2, 0, 2*Math.PI);
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
         ctx.stroke();
 
         // Draw cross
         ctx.beginPath();
-        ctx.moveTo(this.centerX - this.radius, this.centerY);
-        ctx.lineTo(this.centerX + this.radius, this.centerY);
-        ctx.moveTo(this.centerX, this.centerY - this.radius);
-        ctx.lineTo(this.centerX, this.centerY + this.radius);
+        ctx.moveTo(this.centerX - Reticle.RETICLE_DIAM/2, this.centerY);
+        ctx.lineTo(this.centerX + Reticle.RETICLE_DIAM/2, this.centerY);
+        ctx.moveTo(this.centerX, this.centerY - Reticle.RETICLE_DIAM/2);
+        ctx.lineTo(this.centerX, this.centerY + Reticle.RETICLE_DIAM/2);
         ctx.strokeStyle = 'black';
         ctx.stroke();
     }
@@ -817,8 +815,8 @@ class Reticle extends Target {
         // === YOUR CODE HERE ===
         const dx = ptX - this.centerX;
         const dy = ptY - this.centerY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        return dist <= Reticle.RETICLE_INNER_DIAM / 2;
+        const dist_square = dx*dx+dy*dy;
+        return dist_square <= Reticle.RETICLE_INNER_DIAM/2*Reticle.RETICLE_INNER_DIAM/2;
         
         // === REMOVE THE FOLLOWING CODE (which is here so the skeleton code compiles) ===
         // return false;
@@ -904,19 +902,11 @@ class BackgroundDisplay extends ScreenObject{
         let xpos : number = 10;
 
         // === YOUR CODE HERE ===
-        if (this.msg1) {
-            ctx.fillText(this.msg1, xpos, ypos);
-            ypos += fontHeight + leading;
-        }
-
-        if (this.msg2) {
-            ctx.fillText(this.msg2, xpos, ypos);
-            ypos += fontHeight + leading;
-        }
-
-        if (this.msg3) {
-            ctx.fillText(this.msg3, xpos, ypos);
-        }
+        ctx.fillText(this.msg1, xpos, ypos);
+        ypos += fontHeight + 10;
+        ctx.fillText(this.msg2, xpos, ypos);
+        ypos += fontHeight + 10;
+        ctx.fillText(this.msg3, xpos, ypos);
     }
 
     // . . . . . . . . . . . .  . . . . . . . . . . . . . . . . . . . . . . 
